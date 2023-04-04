@@ -421,10 +421,12 @@ def entry_contents_path(path: str, type_: int = 0) -> list:
             entry: os.DirEntry
             if type_ == 0:
                 contents.append(entry.path)
-            elif type_ == 1 and entry.is_file():
-                contents.append(entry.path)
-            elif type_ == 2 and entry.is_dir():
-                contents.append(entry.path)
+            elif type_ == 1:
+                if entry.is_file():
+                    contents.append(entry.path)
+            elif type_ == 2:
+                if entry.is_dir():
+                    contents.append(entry.path)
             else:
                 raise ValueError("type input error, type is 0 or 1 or 2.")
     return contents
@@ -490,11 +492,12 @@ def get_dirs_path(path: str) -> list:
     return dirs
 
 
-def entry_contents_dict(path: str, type_: int = 0) -> dict:
+def entry_contents_dict(path: str, type_: int = 0, suffix: str = None) -> dict:
     """
     Obtain all files in the specified path
     :param path: path
     :param type_: type_
+    :param suffix: 筛选的条件
     :return: files and (or) dirs
     """
     files: list = []
@@ -504,23 +507,28 @@ def entry_contents_dict(path: str, type_: int = 0) -> dict:
     with os.scandir(path) as it:
         for entry in it:
             entry: os.DirEntry
-            if type_ == 0:
-                dict_ = dict(itertools.chain(dict_.items(), {
-                    entry.name: entry.path
-                }.items()))
-                contents.append(entry.name)
-            elif type_ == 1 and entry.is_file():
-                dict_ = dict(itertools.chain(dict_.items(), {
-                    entry.name: entry.path
-                }.items()))
-                files.append(entry.name)
-            elif type_ == 2 and entry.is_dir():
-                dict_ = dict(itertools.chain(dict_.items(), {
-                    entry.name: entry.path
-                }.items()))
-                dirs.append(entry.name)
-            else:
-                raise ValueError("type input error, type is 0 or 1 or 2.")
+            # 判断是否满足情况
+            if suffix is None or entry.name.endswith(entry.name):
+                if type_ == 0:
+                    dict_ = dict(itertools.chain(dict_.items(), {
+                        entry.name: entry.path
+                    }.items()))
+                    contents.append(entry.name)
+                elif type_ == 1:
+                    # 此处判断不能和 type_ == 1 连写，因为需要进行提示 ValueError("type input error, type is 0 or 1 or 2.")
+                    if entry.is_file():
+                        dict_ = dict(itertools.chain(dict_.items(), {
+                            entry.name: entry.path
+                        }.items()))
+                        files.append(entry.name)
+                elif type_ == 2:
+                    if entry.is_dir():
+                        dict_ = dict(itertools.chain(dict_.items(), {
+                            entry.name: entry.path
+                        }.items()))
+                    dirs.append(entry.name)
+                else:
+                    raise ValueError("type input error, type is 0 or 1 or 2.")
     dict_ = dict(itertools.chain(dict_.items(), {
         "name": contents if type_ == 0 else files if type_ == 1 else dirs
     }.items()))
