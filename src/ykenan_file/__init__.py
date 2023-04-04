@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
+import itertools
+import os
+
 import pandas as pd
 import ykenan_log
 from pandas import DataFrame
@@ -372,3 +375,171 @@ def read_write_line(path: str, output: str, callback, column=None, rm: str = 'r'
                 if new_line and len(new_line) != 0 and new_line != "":
                     content = "\t".join(new_line)
                     w.write(f"{content}\n")
+
+
+def get_contents(path: str) -> list:
+    """
+    Obtain all files and folders under the specified path
+    :param path: path
+    :return: files and folders
+    """
+    return list(os.listdir(path))
+
+
+def entry_contents(path: str, type_: int = 0) -> list:
+    """
+    Obtain all files and (or) folders under the specified path
+    :param path: path
+    :param type_: judge file or dir
+    :return: files and (or) folders
+    """
+    contents: list = []
+    with os.scandir(path) as it:
+        for entry in it:
+            entry: os.DirEntry
+            if type_ == 0:
+                contents.append(entry.name)
+            elif type_ == 1 and entry.is_file():
+                contents.append(entry.name)
+            elif type_ == 2 and entry.is_dir():
+                contents.append(entry.name)
+            else:
+                raise ValueError("type input error, type is 0 or 1 or 2.")
+    return contents
+
+
+def entry_contents_path(path: str, type_: int = 0) -> list:
+    """
+    Obtain all files and (or) folders under the specified path
+    :param path: path
+    :param type_: judge file or dir
+    :return: files and (or) folders path
+    """
+    contents: list = []
+    with os.scandir(path) as it:
+        for entry in it:
+            entry: os.DirEntry
+            if type_ == 0:
+                contents.append(entry.path)
+            elif type_ == 1 and entry.is_file():
+                contents.append(entry.path)
+            elif type_ == 2 and entry.is_dir():
+                contents.append(entry.path)
+            else:
+                raise ValueError("type input error, type is 0 or 1 or 2.")
+    return contents
+
+
+def get_files(path: str) -> list:
+    """
+    Obtain all files in the specified path
+    :param path:  path
+    :return: files
+    """
+    files: list = []
+    with os.scandir(path) as it:
+        for entry in it:
+            entry: os.DirEntry
+            if entry.is_file():
+                files.append(entry.name)
+    return files
+
+
+def get_files_path(path: str) -> list:
+    """
+    Obtain all files in the specified path
+    :param path:  path
+    :return: files
+    """
+    files: list = []
+    with os.scandir(path) as it:
+        for entry in it:
+            entry: os.DirEntry
+            if entry.is_file():
+                files.append(entry.path)
+    return files
+
+
+def get_dirs(path: str) -> list:
+    """
+    Obtain all files in the specified path
+    :param path:  path
+    :return: files
+    """
+    dirs: list = []
+    with os.scandir(path) as it:
+        for entry in it:
+            entry: os.DirEntry
+            if entry.is_dir():
+                dirs.append(entry.name)
+    return dirs
+
+
+def get_dirs_path(path: str) -> list:
+    """
+    Obtain all files in the specified path
+    :param path:  path
+    :return: files
+    """
+    dirs: list = []
+    with os.scandir(path) as it:
+        for entry in it:
+            entry: os.DirEntry
+            if entry.is_dir():
+                dirs.append(entry.path)
+    return dirs
+
+
+def entry_contents_dict(path: str, type_: int = 0) -> dict:
+    """
+    Obtain all files in the specified path
+    :param path: path
+    :param type_: type_
+    :return: files and (or) dirs
+    """
+    files: list = []
+    dirs: list = []
+    contents: list = []
+    dict_: dict = {}
+    with os.scandir(path) as it:
+        for entry in it:
+            entry: os.DirEntry
+            if type_ == 0:
+                dict_ = dict(itertools.chain(dict_.items(), {
+                    entry.name: entry.path
+                }.items()))
+                contents.append(entry.name)
+            elif type_ == 1 and entry.is_file():
+                dict_ = dict(itertools.chain(dict_.items(), {
+                    entry.name: entry.path
+                }.items()))
+                files.append(entry.name)
+            elif type_ == 2 and entry.is_dir():
+                dict_ = dict(itertools.chain(dict_.items(), {
+                    entry.name: entry.path
+                }.items()))
+                dirs.append(entry.name)
+            else:
+                raise ValueError("type input error, type is 0 or 1 or 2.")
+    dict_ = dict(itertools.chain(dict_.items(), {
+        "name": contents if type_ == 0 else files if type_ == 1 else dirs
+    }.items()))
+    return dict_
+
+
+def entry_files_dict(path: str) -> dict:
+    """
+    Obtain all files in the specified path
+    :param path: path
+    :return: files
+    """
+    return entry_contents_dict(path, 1)
+
+
+def entry_dirs_dict(path: str) -> dict:
+    """
+    Obtain all files in the specified path
+    :param path: path
+    :return: dirs
+    """
+    return entry_contents_dict(path, 2)
