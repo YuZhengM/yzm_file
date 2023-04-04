@@ -526,7 +526,7 @@ def entry_contents_dict(path: str, type_: int = 0, suffix: str = None) -> dict:
                         dict_ = dict(itertools.chain(dict_.items(), {
                             entry.name: entry.path
                         }.items()))
-                    dirs.append(entry.name)
+                        dirs.append(entry.name)
                 else:
                     raise ValueError("type input error, type is 0 or 1 or 2.")
     dict_ = dict(itertools.chain(dict_.items(), {
