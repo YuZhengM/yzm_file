@@ -8,6 +8,8 @@ import pandas as pd
 import ykenan_log
 from pandas import DataFrame
 
+from ykenan_file.util import str_list
+
 logger = ykenan_log.Logger("ykenan_file", is_form_file=False)
 
 '''
@@ -18,7 +20,7 @@ logger = ykenan_log.Logger("ykenan_file", is_form_file=False)
 
 class Create:
     """
-    创建 csv 文件
+    初始化文件
     """
 
     def __init__(self, sep='\t',
@@ -126,7 +128,7 @@ class Create:
         if output_file is not None:
             self.to_file(df, output_file)
 
-    def add_rank_by_group(self, df: DataFrame, group: str, column: str, output_file: str = None) -> None:
+    def add_rank_by_group(self, df: DataFrame, group: str_list, column: str, output_file: str = None) -> None:
         """
         添加五个 rank 列
         :param df: DataFrame
@@ -143,12 +145,12 @@ class Create:
         if output_file is not None:
             self.to_file(df, output_file)
 
-    def add_sum_by_group(self, df: DataFrame, group: str, column: str, output_file: str = None) -> DataFrame:
+    def add_sum_by_group(self, df: DataFrame, group: str_list, column: str, output_file: str = None) -> DataFrame:
         """
         通过分组计算某列数总和
         :param df: DataFrame
         :param group: 分组的列
-        :param column: 需要秩的列
+        :param column: 需要和的列
         :param output_file: Output file path
         :return:
         """
@@ -161,7 +163,25 @@ class Create:
             self.to_file(column_sum, output_file)
         return column_sum
 
-    def add_calculation_by_group(self, df: DataFrame, group: str, column: str, output_file: str = None, add_merge_files: list = None):
+    def add_count_by_group(self, df: DataFrame, group: str_list, column: str, output_file: str = None) -> DataFrame:
+        """
+        通过分组计算某列数数量
+        :param df: DataFrame
+        :param group: 分组的列
+        :param column: 需要数量的列
+        :param output_file: Output file path
+        :return:
+        """
+        # 总和
+        logger.debug(f"通过分组计算某列数总和: {group}, {column}")
+        column_sum = df.groupby(group)[column].count().reset_index()
+        column_sum.columns = [group, f"{column}_count"]
+        # 保存文件
+        if output_file is not None:
+            self.to_file(column_sum, output_file)
+        return column_sum
+
+    def add_calculation_by_group(self, df: DataFrame, group: str_list, column: str, output_file: str = None, add_merge_files: list = None):
         """
         通过分组进行一系列数值计算
         :param df: DataFrame
