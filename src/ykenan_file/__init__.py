@@ -155,7 +155,8 @@ class Create:
         # 总和
         logger.debug(f"通过分组计算某列数总和: {group}, {column}")
         column_sum = df.groupby(group)[column].sum().reset_index()
-        column_sum.columns = group.append(f"{column}_sum")
+        group.append(f"{column}_sum")
+        column_sum.columns = group
         # 保存文件
         if output_file is not None:
             self.to_file(column_sum, output_file)
@@ -173,7 +174,8 @@ class Create:
         # 总和
         logger.debug(f"通过分组计算某列数总和: {group}, {column}")
         column_sum = df.groupby(group)[column].count().reset_index()
-        column_sum.columns = group.append(f"{column}_count")
+        group.append(f"{column}_count")
+        column_sum.columns = group
         # 保存文件
         if output_file is not None:
             self.to_file(column_sum, output_file)
@@ -194,33 +196,42 @@ class Create:
         logger.debug(f"通过分组进行一系列数值计算: {group}, {column}")
         # 个数大小
         column_size = df.groupby(group)[column].size().reset_index()
-        column_size.columns = group.append(f"{column}_size")
+        group.append(f"{column}_size")
+        column_size.columns = group
         # 平均值
         column_mean = df.groupby(group)[column].mean().reset_index()
-        column_mean.columns = group.append(f"{column}_mean")
+        group.append(f"{column}_mean")
+        column_mean.columns = group
         # 方差 (size == 1 的值为 NaN)
         column_var = df.groupby(group)[column].var().reset_index()
-        column_var.columns = group.append(f"{column}_var")
+        group.append(f"{column}_var")
+        column_var.columns = group
         # 标准误差 (size == 1 的值为 NaN)
         column_sem = df.groupby(group)[column].sem().reset_index()
-        column_sem.columns = group.append(f"{column}_sem")
+        group.append(f"{column}_sem")
+        column_sem.columns = group
         # 标准偏差 (size == 1 的值为 NaN)
         column_std = df.groupby(group)[column].std().reset_index()
-        column_std.columns = group.append(f"{column}_std")
+        group.append(f"{column}_std")
+        column_std.columns = group
         # 中位数值
         column_median = df.groupby(group)[column].median().reset_index()
-        column_median.columns = group.append(f"{column}_median")
+        group.append(f"{column}_median")
+        column_median.columns = group
         # 最小值
         column_min = df.groupby(group)[column].min().reset_index()
-        column_min.columns = group.append(f"{column}_min")
+        group.append(f"{column}_min")
+        column_min.columns = group
         # 最大值
         column_max = df.groupby(group)[column].max().reset_index()
-        column_max.columns = group.append(f"{column}_max")
+        group.append(f"{column}_max")
+        column_max.columns = group
         # 总和
         column_sum = self.sum_group_by(df, group, column)
         # 乘积
         column_prod = df.groupby(group)[column].prod().reset_index()
-        column_prod.columns = group.append(f"{column}_prod")
+        group.append(f"{column}_prod")
+        column_prod.columns = group
         # 保存文件
         all_merge_files: list = [column_size, column_mean, column_var, column_sem, column_std,
                                  column_median, column_min, column_max, column_sum, column_prod]
