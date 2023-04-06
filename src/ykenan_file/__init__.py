@@ -8,8 +8,6 @@ import pandas as pd
 import ykenan_log
 from pandas import DataFrame
 
-from ykenan_file.util import str_list
-
 logger = ykenan_log.Logger("ykenan_file", is_form_file=False)
 
 '''
@@ -128,7 +126,7 @@ class Create:
         if output_file is not None:
             self.to_file(df, output_file)
 
-    def add_rank_by_group(self, df: DataFrame, group: str_list, column: str, output_file: str = None) -> None:
+    def add_rank_group_by(self, df: DataFrame, group: list, column: str, output_file: str = None) -> None:
         """
         添加五个 rank 列
         :param df: DataFrame
@@ -145,7 +143,7 @@ class Create:
         if output_file is not None:
             self.to_file(df, output_file)
 
-    def add_sum_by_group(self, df: DataFrame, group: str_list, column: str, output_file: str = None) -> DataFrame:
+    def sum_group_by(self, df: DataFrame, group: list, column: str, output_file: str = None) -> DataFrame:
         """
         通过分组计算某列数总和
         :param df: DataFrame
@@ -157,13 +155,13 @@ class Create:
         # 总和
         logger.debug(f"通过分组计算某列数总和: {group}, {column}")
         column_sum = df.groupby(group)[column].sum().reset_index()
-        column_sum.columns = [group, f"{column}_sum"]
+        column_sum.columns = group.append(f"{column}_sum")
         # 保存文件
         if output_file is not None:
             self.to_file(column_sum, output_file)
         return column_sum
 
-    def add_count_by_group(self, df: DataFrame, group: str_list, column: str, output_file: str = None) -> DataFrame:
+    def count_group_by(self, df: DataFrame, group: list, column: str, output_file: str = None) -> DataFrame:
         """
         通过分组计算某列数数量
         :param df: DataFrame
@@ -175,18 +173,19 @@ class Create:
         # 总和
         logger.debug(f"通过分组计算某列数总和: {group}, {column}")
         column_sum = df.groupby(group)[column].count().reset_index()
-        column_sum.columns = [group, f"{column}_count"]
+        column_sum.columns = group.append(f"{column}_count")
         # 保存文件
         if output_file is not None:
             self.to_file(column_sum, output_file)
         return column_sum
 
-    def add_calculation_by_group(self, df: DataFrame, group: str_list, column: str, output_file: str = None, add_merge_files: list = None):
+    def calculation_group_by(self, df: DataFrame, group: list, column: str, on: str, output_file: str = None, add_merge_files: list = None):
         """
         通过分组进行一系列数值计算
         :param df: DataFrame
         :param group: 分组的列
         :param column: 需要秩的列
+        :param on: 合并的列
         :param output_file: Output file path
         :param add_merge_files: 添加 merge 文件
         :return:
@@ -195,42 +194,42 @@ class Create:
         logger.debug(f"通过分组进行一系列数值计算: {group}, {column}")
         # 个数大小
         column_size = df.groupby(group)[column].size().reset_index()
-        column_size.columns = [group, f"{column}_size"]
+        column_size.columns = group.append(f"{column}_size")
         # 平均值
         column_mean = df.groupby(group)[column].mean().reset_index()
-        column_mean.columns = [group, f"{column}_mean"]
+        column_mean.columns = group.append(f"{column}_mean")
         # 方差 (size == 1 的值为 NaN)
         column_var = df.groupby(group)[column].var().reset_index()
-        column_var.columns = [group, f"{column}_var"]
+        column_var.columns = group.append(f"{column}_var")
         # 标准误差 (size == 1 的值为 NaN)
         column_sem = df.groupby(group)[column].sem().reset_index()
-        column_sem.columns = [group, f"{column}_sem"]
+        column_sem.columns = group.append(f"{column}_sem")
         # 标准偏差 (size == 1 的值为 NaN)
         column_std = df.groupby(group)[column].std().reset_index()
-        column_std.columns = [group, f"{column}_std"]
+        column_std.columns = group.append(f"{column}_std")
         # 中位数值
         column_median = df.groupby(group)[column].median().reset_index()
-        column_median.columns = [group, f"{column}_median"]
+        column_median.columns = group.append(f"{column}_median")
         # 最小值
         column_min = df.groupby(group)[column].min().reset_index()
-        column_min.columns = [group, f"{column}_min"]
+        column_min.columns = group.append(f"{column}_min")
         # 最大值
         column_max = df.groupby(group)[column].max().reset_index()
-        column_max.columns = [group, f"{column}_max"]
+        column_max.columns = group.append(f"{column}_max")
         # 总和
-        column_sum = self.add_sum_by_group(df, group, column)
+        column_sum = self.sum_group_by(df, group, column)
         # 乘积
         column_prod = df.groupby(group)[column].prod().reset_index()
-        column_prod.columns = [group, f"{column}_prod"]
+        column_prod.columns = group.append(f"{column}_prod")
         # 保存文件
         all_merge_files: list = [column_size, column_mean, column_var, column_sem, column_std,
                                  column_median, column_min, column_max, column_sum, column_prod]
         if output_file is not None:
             if add_merge_files is not None:
                 all_merge_files.extend(add_merge_files)
-                self.merge_files(all_merge_files, on=group, output_file=output_file)
+                self.merge_files(all_merge_files, on=on, output_file=output_file)
             else:
-                self.merge_files(all_merge_files, on=group, output_file=output_file)
+                self.merge_files(all_merge_files, on=on, output_file=output_file)
         return all_merge_files
 
     def merge_files(self, files: list, on: str, output_file: str = None) -> None:
