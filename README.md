@@ -13,3 +13,13 @@ This is a simple log package. You can see
 ```shell
 pip install ykenan_file
 ```
+
+> import
+
+```shell
+import ykenan_file as yf
+```
+
+
+
+
