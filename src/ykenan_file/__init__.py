@@ -5,10 +5,8 @@ import itertools
 import os
 
 import pandas as pd
-import ykenan_log
+from ykenan_log import Logger
 from pandas import DataFrame
-
-logger = ykenan_log.Logger("ykenan_file", is_form_file=False)
 
 '''
  * @Author       : YKenan
@@ -26,7 +24,9 @@ class Create:
                  encoding: str = 'utf_8_sig',
                  index: bool = False,
                  header: bool = True,
-                 sheet_name='new_sheet'):
+                 sheet_name='new_sheet',
+                 log_file: str = "ykenan_file",
+                 is_form_log_file: bool = True):
         """
         Initialization creation information, public information
         :param sep: File Separator
@@ -35,7 +35,10 @@ class Create:
         :param index: Whether there is a row index
         :param header: Whether there is a title
         :param sheet_name: sheet name
+        :param log_file: Path to form a log file
+        :param is_form_log_file: Is a log file formed
         """
+        self.log = Logger(name="YKenan file", log_path=log_file, is_form_file=is_form_log_file)
         self.sep = sep
         self.line_terminator = line_terminator
         self.encoding = encoding
@@ -48,7 +51,7 @@ class Create:
         :param df: DataFrame
         :param file: File path plus name
         """
-        logger.debug(f"create a file: {file}")
+        self.log.debug(f"create a file: {file}")
         # 导出文件
         if str(file).endswith(".txt"):
             df.to_csv(file, sep=self.sep, lineterminator=self.line_terminator, header=self.header, encoding=self.encoding, index=self.index)
@@ -69,7 +72,7 @@ class Create:
         :return:
         """
         # 重新命名
-        logger.debug(f"Modify the file column name: {columns}")
+        self.log.debug(f"Modify the file column name: {columns}")
         df.columns = columns
         # 保存
         if output_file is not None:
@@ -84,7 +87,7 @@ class Create:
         :return:
         """
         # 删除列
-        logger.debug(f"删除文件列名: {columns}")
+        self.log.debug(f"删除文件列名: {columns}")
         df.drop(columns, axis=1, inplace=True)
         # 保存文件
         if output_file is not None:
@@ -104,7 +107,7 @@ class Create:
         if columns is None:
             columns: list = list(df.columns)
         if is_log:
-            logger.debug(f"添加内容 {list_content} ...")
+            self.log.debug(f"添加内容 {list_content} ...")
         df.loc[len(df)] = pd.Series(list_content, index=columns)
         # 保存文件
         if output_file is not None:
@@ -120,7 +123,7 @@ class Create:
         :param output_file: Output file path
         :return:
         """
-        logger.debug(f"添加一个减法列: {column}")
+        self.log.debug(f"添加一个减法列: {column}")
         df[column] = df[a] - df[b]
         # 保存文件
         if output_file is not None:
@@ -135,7 +138,7 @@ class Create:
         :param output_file: Output file path
         :return:
         """
-        logger.debug(f"添加五个 rank 列: {group}, {column}")
+        self.log.debug(f"添加五个 rank 列: {group}, {column}")
         # 添加排名
         for method in ['average', 'min', 'max', 'dense', 'first']:
             df[f'{method}_rank'] = df.groupby(group)[column].rank(method)
@@ -153,7 +156,7 @@ class Create:
         :return:
         """
         # 总和
-        logger.debug(f"通过分组计算某列数总和: {group}, {column}")
+        self.log.debug(f"通过分组计算某列数总和: {group}, {column}")
         column_sum = df.groupby(group)[column].sum().reset_index()
         group.append(f"{column}_sum")
         column_sum.columns = group
@@ -172,7 +175,7 @@ class Create:
         :return:
         """
         # 总和
-        logger.debug(f"通过分组计算某列数总和: {group}, {column}")
+        self.log.debug(f"通过分组计算某列数总和: {group}, {column}")
         column_sum = df.groupby(group)[column].count().reset_index()
         group.append(f"{column}_count")
         column_sum.columns = group
@@ -193,7 +196,7 @@ class Create:
         :return:
         """
         # 总和
-        logger.debug(f"通过分组进行一系列数值计算: {group}, {column}")
+        self.log.debug(f"通过分组进行一系列数值计算: {group}, {column}")
         # 个数大小
         column_size = df.groupby(group)[column].size().reset_index()
         group.append(f"{column}_size")
@@ -253,11 +256,11 @@ class Create:
         """
         # 总和
         size = len(files)
-        logger.debug(f"将文件进行合并: {size}, {on}")
+        self.log.debug(f"将文件进行合并: {size}, {on}")
         new_file = files[0]
         i = 1
         while i < size:
-            logger.debug(f"将文件进行合并第 {i} 次")
+            self.log.debug(f"将文件进行合并第 {i} 次")
             new_file = pd.merge(new_file, files[i], on=on)
             i += 1
         # 保存文件
@@ -277,7 +280,9 @@ class Read:
                  lines: bool = True,
                  header="infer",
                  sheet_name=0,
-                 low_memory: bool = False):
+                 low_memory: bool = False,
+                 log_file: str = "ykenan_file",
+                 is_form_log_file: bool = True):
         """
         Read file initialization information, public information
         :param sep: file separator
@@ -288,7 +293,10 @@ class Read:
         :param header: The first row header situation
         :param sheet_name: Specify the sheet number when reading Excel
         :param low_memory: Process files in internal chunks to reduce memory usage during parsing
+        :param log_file: Path to form a log file
+        :param is_form_log_file: Is a log file formed
         """
+        self.log = Logger(name="YKenan file", log_path=log_file, is_form_file=is_form_log_file)
         self.sep = sep
         self.line_terminator = line_terminator
         self.encoding = encoding
@@ -304,7 +312,7 @@ class Read:
         :param file: File path information
         :return:
         """
-        logger.debug(f"Start reading {file} file...")
+        self.log.debug(f"Start reading {file} file...")
         if str(file).endswith(".txt") or str(file).endswith(".bed"):
             return pd.read_table(file, sep=self.sep, header=self.header, encoding=self.encoding, low_memory=self.low_memory)
         elif str(file).endswith(".csv"):
@@ -338,246 +346,256 @@ class Read:
         :return:
         """
         file_content = self.read_file(*files)
-        logger.debug(f"Start merging files {files} ...")
+        self.log.debug(f"Start merging files {files} ...")
         pd_concat = pd.concat(file_content, join=join, ignore_index=True)
         pd.DataFrame(pd_concat).to_csv(output_file, encoding=encoding, sep=self.sep, index=index)
 
 
-def read_file_line(path: str, mode: str = 'r', encoding: str = "utf-8") -> list:
+class staticMethod:
     """
-    Read file by line
-    :param path:
-    :param mode:
-    :param encoding:
-    :return:
+    文件或者路径的静态方法
     """
-    content = []
-    with open(path, mode, encoding=encoding) as f:
-        while True:
-            line = f.readline().strip()
-            content.append(line)
-            if not line:
-                break
-    return content
 
+    def __init__(self, log_file: str = "ykenan_file", is_form_log_file: bool = True):
+        """
+        :param log_file: Path to form a log file
+        :param is_form_log_file: Is a log file formed
+        """
+        self.log = Logger(name="YKenan file", log_path=log_file, is_form_file=is_form_log_file)
 
-def write_file_line(path: str, content: list, line: str = '\n', mode: str = 'a', encoding: str = "utf-8") -> None:
-    """
-    Write a file (write by line, and it will not be cleared if the original file is called again by default)
-    :param path:
-    :param content:
-    :param line:
-    :param mode:
-    :param encoding:
-    :return:
-    """
-    with open(path, mode, encoding=encoding) as f:
-        for li in content:
-            f.write(li + line)
-
-
-def read_write_line(path: str, output: str, callback, column=None, rm: str = 'r', om: str = 'w',
-                    encoding: str = "utf-8", buffering: int = 1, newline: str = "\n") -> None:
-    """
-    Write one file to another
-    :param column: Output column name
-    :param path: Enter a path
-    :param output: output path
-    :param callback: A callback function that returns the input data
-    :param rm: Read mode
-    :param om: Output mode
-    :param encoding: encoding
-    :param buffering: Number of loaded lines in the output file
-    :param newline: The newline character of the output file
-    :return:
-    """
-    with open(output, om, encoding=encoding, buffering=buffering, newline=newline) as w:
-        with open(path, rm, encoding=encoding) as f:
-            if column:
-                name: str = "\t".join(column)
-                logger.debug(f"Add Column Name: {name}")
-                w.write(f"{name}\n")
+    def read_file_line(self, path: str, mode: str = 'r', encoding: str = "utf-8") -> list:
+        """
+        Read file by line
+        :param path:
+        :param mode:
+        :param encoding:
+        :return:
+        """
+        content = []
+        self.log.info(f"Start reading file {path}")
+        with open(path, mode, encoding=encoding) as f:
             while True:
-                line: str = f.readline().strip()
+                line = f.readline().strip()
+                content.append(line)
                 if not line:
                     break
-                new_line: list = callback(line)
-                if new_line and len(new_line) != 0 and new_line != "":
-                    content = "\t".join(new_line)
-                    w.write(f"{content}\n")
+        return content
 
+    def write_file_line(self, path: str, content: list, line: str = '\n', mode: str = 'a', encoding: str = "utf-8") -> None:
+        """
+        Write a file (write by line, and it will not be cleared if the original file is called again by default)
+        :param path:
+        :param content:
+        :param line:
+        :param mode:
+        :param encoding:
+        :return:
+        """
+        self.log.info(f"Start writing file {path}")
+        with open(path, mode, encoding=encoding) as f:
+            for li in content:
+                f.write(li + line)
 
-def get_contents(path: str) -> list:
-    """
-    Obtain all files and folders under the specified path
-    :param path: path
-    :return: files and folders
-    """
-    return list(os.listdir(path))
+    def read_write_line(self, path: str, output: str, callback, column=None, rm: str = 'r', om: str = 'w',
+                        encoding: str = "utf-8", buffering: int = 1, newline: str = "\n") -> None:
+        """
+        Write one file to another
+        :param column: Output column name
+        :param path: Enter a path
+        :param output: output path
+        :param callback: A callback function that returns the input data
+        :param rm: Read mode
+        :param om: Output mode
+        :param encoding: encoding
+        :param buffering: Number of loaded lines in the output file
+        :param newline: The newline character of the output file
+        :return:
+        """
+        with open(output, om, encoding=encoding, buffering=buffering, newline=newline) as w:
+            with open(path, rm, encoding=encoding) as f:
+                if column:
+                    name: str = "\t".join(column)
+                    self.log.debug(f"Add Column Name: {name}")
+                    w.write(f"{name}\n")
+                while True:
+                    line: str = f.readline().strip()
+                    if not line:
+                        break
+                    new_line: list = callback(line)
+                    if new_line and len(new_line) != 0 and new_line != "":
+                        content = "\t".join(new_line)
+                        w.write(f"{content}\n")
 
+    def get_contents(self, path: str) -> list:
+        """
+        Obtain all files and folders under the specified path
+        :param path: path
+        :return: files and folders
+        """
+        self.log.info("Starting to retrieve content under this path")
+        return list(os.listdir(path))
 
-def entry_contents(path: str, type_: int = 0) -> list:
-    """
-    Obtain all files and (or) folders under the specified path
-    :param path: path
-    :param type_: judge file or dir
-    :return: files and (or) folders
-    """
-    contents: list = []
-    with os.scandir(path) as it:
-        for entry in it:
-            entry: os.DirEntry
-            if type_ == 0:
-                contents.append(entry.name)
-            elif type_ == 1 and entry.is_file():
-                contents.append(entry.name)
-            elif type_ == 2 and entry.is_dir():
-                contents.append(entry.name)
-            else:
-                raise ValueError("type input error, type is 0 or 1 or 2.")
-    return contents
-
-
-def entry_contents_path(path: str, type_: int = 0) -> list:
-    """
-    Obtain all files and (or) folders under the specified path
-    :param path: path
-    :param type_: judge file or dir
-    :return: files and (or) folders path
-    """
-    contents: list = []
-    with os.scandir(path) as it:
-        for entry in it:
-            entry: os.DirEntry
-            if type_ == 0:
-                contents.append(entry.path)
-            elif type_ == 1:
-                if entry.is_file():
-                    contents.append(entry.path)
-            elif type_ == 2:
-                if entry.is_dir():
-                    contents.append(entry.path)
-            else:
-                raise ValueError("type input error, type is 0 or 1 or 2.")
-    return contents
-
-
-def get_files(path: str) -> list:
-    """
-    Obtain all files in the specified path
-    :param path:  path
-    :return: files
-    """
-    files: list = []
-    with os.scandir(path) as it:
-        for entry in it:
-            entry: os.DirEntry
-            if entry.is_file():
-                files.append(entry.name)
-    return files
-
-
-def get_files_path(path: str) -> list:
-    """
-    Obtain all files in the specified path
-    :param path:  path
-    :return: files
-    """
-    files: list = []
-    with os.scandir(path) as it:
-        for entry in it:
-            entry: os.DirEntry
-            if entry.is_file():
-                files.append(entry.path)
-    return files
-
-
-def get_dirs(path: str) -> list:
-    """
-    Obtain all files in the specified path
-    :param path:  path
-    :return: files
-    """
-    dirs: list = []
-    with os.scandir(path) as it:
-        for entry in it:
-            entry: os.DirEntry
-            if entry.is_dir():
-                dirs.append(entry.name)
-    return dirs
-
-
-def get_dirs_path(path: str) -> list:
-    """
-    Obtain all files in the specified path
-    :param path:  path
-    :return: files
-    """
-    dirs: list = []
-    with os.scandir(path) as it:
-        for entry in it:
-            entry: os.DirEntry
-            if entry.is_dir():
-                dirs.append(entry.path)
-    return dirs
-
-
-def entry_contents_dict(path: str, type_: int = 0, suffix: str = None) -> dict:
-    """
-    Obtain all files in the specified path
-    :param path: path
-    :param type_: type_
-    :param suffix: 筛选的条件
-    :return: files and (or) dirs
-    """
-    files: list = []
-    dirs: list = []
-    contents: list = []
-    dict_: dict = {}
-    with os.scandir(path) as it:
-        for entry in it:
-            entry: os.DirEntry
-            # 判断是否满足情况
-            if suffix is None or entry.name.endswith(entry.name):
+    def entry_contents(self, path: str, type_: int = 0) -> list:
+        """
+        Obtain all files and (or) folders under the specified path
+        :param path: path
+        :param type_: judge file or dir
+        :return: files and (or) folders
+        """
+        self.log.info("Starting to retrieve content under this path")
+        contents: list = []
+        with os.scandir(path) as it:
+            for entry in it:
+                entry: os.DirEntry
                 if type_ == 0:
-                    dict_ = dict(itertools.chain(dict_.items(), {
-                        entry.name: entry.path
-                    }.items()))
                     contents.append(entry.name)
-                elif type_ == 1:
-                    # 此处判断不能和 type_ == 1 连写，因为需要进行提示 ValueError("type input error, type is 0 or 1 or 2.")
-                    if entry.is_file():
-                        dict_ = dict(itertools.chain(dict_.items(), {
-                            entry.name: entry.path
-                        }.items()))
-                        files.append(entry.name)
-                elif type_ == 2:
-                    if entry.is_dir():
-                        dict_ = dict(itertools.chain(dict_.items(), {
-                            entry.name: entry.path
-                        }.items()))
-                        dirs.append(entry.name)
+                elif type_ == 1 and entry.is_file():
+                    contents.append(entry.name)
+                elif type_ == 2 and entry.is_dir():
+                    contents.append(entry.name)
                 else:
                     raise ValueError("type input error, type is 0 or 1 or 2.")
-    dict_ = dict(itertools.chain(dict_.items(), {
-        "name": contents if type_ == 0 else files if type_ == 1 else dirs
-    }.items()))
-    return dict_
+        return contents
 
+    def entry_contents_path(self, path: str, type_: int = 0) -> list:
+        """
+        Obtain all files and (or) folders under the specified path
+        :param path: path
+        :param type_: judge file or dir
+        :return: files and (or) folders path
+        """
+        self.log.info("Starting to retrieve content under this path")
+        contents: list = []
+        with os.scandir(path) as it:
+            for entry in it:
+                entry: os.DirEntry
+                if type_ == 0:
+                    contents.append(entry.path)
+                elif type_ == 1:
+                    if entry.is_file():
+                        contents.append(entry.path)
+                elif type_ == 2:
+                    if entry.is_dir():
+                        contents.append(entry.path)
+                else:
+                    raise ValueError("type input error, type is 0 or 1 or 2.")
+        return contents
 
-def entry_files_dict(path: str) -> dict:
-    """
-    Obtain all files in the specified path
-    :param path: path
-    :return: files
-    """
-    return entry_contents_dict(path, 1)
+    def get_files(self, path: str) -> list:
+        """
+        Obtain all files in the specified path
+        :param path:  path
+        :return: files
+        """
+        self.log.info("Starting to retrieve files under this path")
+        files: list = []
+        with os.scandir(path) as it:
+            for entry in it:
+                entry: os.DirEntry
+                if entry.is_file():
+                    files.append(entry.name)
+        return files
 
+    def get_files_path(self, path: str) -> list:
+        """
+        Obtain all files in the specified path
+        :param path:  path
+        :return: files
+        """
+        self.log.info("Starting to retrieve files under this path")
+        files: list = []
+        with os.scandir(path) as it:
+            for entry in it:
+                entry: os.DirEntry
+                if entry.is_file():
+                    files.append(entry.path)
+        return files
 
-def entry_dirs_dict(path: str) -> dict:
-    """
-    Obtain all files in the specified path
-    :param path: path
-    :return: dirs
-    """
-    return entry_contents_dict(path, 2)
+    def get_dirs(self, path: str) -> list:
+        """
+        Obtain all files in the specified path
+        :param path:  path
+        :return: dirs
+        """
+        self.log.info("Starting to retrieve directories under this path")
+        dirs: list = []
+        with os.scandir(path) as it:
+            for entry in it:
+                entry: os.DirEntry
+                if entry.is_dir():
+                    dirs.append(entry.name)
+        return dirs
+
+    def get_dirs_path(self, path: str) -> list:
+        """
+        Obtain all files in the specified path
+        :param path:  path
+        :return: dirs
+        """
+        self.log.info("Starting to retrieve directories under this path")
+        dirs: list = []
+        with os.scandir(path) as it:
+            for entry in it:
+                entry: os.DirEntry
+                if entry.is_dir():
+                    dirs.append(entry.path)
+        return dirs
+
+    def entry_contents_dict(self, path: str, type_: int = 0, suffix: str = None) -> dict:
+        """
+        Obtain all files in the specified path
+        :param path: path
+        :param type_: type_
+        :param suffix: 筛选的条件
+        :return: files and (or) dirs
+        """
+        self.log.info("Starting to retrieve content under this path")
+        files: list = []
+        dirs: list = []
+        contents: list = []
+        dict_: dict = {}
+        with os.scandir(path) as it:
+            for entry in it:
+                entry: os.DirEntry
+                # 判断是否满足情况
+                if suffix is None or entry.name.endswith(entry.name):
+                    if type_ == 0:
+                        dict_ = dict(itertools.chain(dict_.items(), {
+                            entry.name: entry.path
+                        }.items()))
+                        contents.append(entry.name)
+                    elif type_ == 1:
+                        # 此处判断不能和 type_ == 1 连写，因为需要进行提示 ValueError("type input error, type is 0 or 1 or 2.")
+                        if entry.is_file():
+                            dict_ = dict(itertools.chain(dict_.items(), {
+                                entry.name: entry.path
+                            }.items()))
+                            files.append(entry.name)
+                    elif type_ == 2:
+                        if entry.is_dir():
+                            dict_ = dict(itertools.chain(dict_.items(), {
+                                entry.name: entry.path
+                            }.items()))
+                            dirs.append(entry.name)
+                    else:
+                        raise ValueError("type input error, type is 0 or 1 or 2.")
+        dict_ = dict(itertools.chain(dict_.items(), {
+            "name": contents if type_ == 0 else files if type_ == 1 else dirs
+        }.items()))
+        return dict_
+
+    def entry_files_dict(self, path: str) -> dict:
+        """
+        Obtain all files in the specified path
+        :param path: path
+        :return: files
+        """
+        return self.entry_contents_dict(path, 1)
+
+    def entry_dirs_dict(self, path: str) -> dict:
+        """
+        Obtain all files in the specified path
+        :param path: path
+        :return: dirs
+        """
+        return self.entry_contents_dict(path, 2)
