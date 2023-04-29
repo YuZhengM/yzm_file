@@ -558,7 +558,7 @@ class staticMethod:
             for entry in it:
                 entry: os.DirEntry
                 # 判断是否满足情况
-                if suffix is None or entry.name.endswith(entry.name):
+                if suffix is None or entry.name.endswith(suffix):
                     if type_ == 0:
                         dict_ = dict(itertools.chain(dict_.items(), {
                             entry.name: entry.path
