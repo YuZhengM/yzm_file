@@ -53,7 +53,7 @@ class Create:
         """
         self.log.debug(f"create a file: {file}")
         # 导出文件
-        if str(file).endswith(".txt"):
+        if str(file).endswith(".txt") or str(file).endswith(".bed"):
             df.to_csv(file, sep=self.sep, lineterminator=self.line_terminator, header=self.header, encoding=self.encoding, index=self.index)
         elif str(file).endswith(".csv"):
             df.to_csv(file, sep=',', lineterminator=self.line_terminator, header=self.header, encoding=self.encoding, index=self.index)
