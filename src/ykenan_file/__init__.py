@@ -184,7 +184,7 @@ class Create:
             self.to_file(column_sum, output_file)
         return column_sum
 
-    def calculation_group_by(self, df: DataFrame, group: list, column: str, on: str, output_file: str = None, add_merge_files: list = None):
+    def calculation_group_by(self, df: DataFrame, group: list, column: str, on: str, output_file: str = None, add_merge_files: list = None) -> DataFrame:
         """
         通过分组进行一系列数值计算
         :param df: DataFrame
@@ -238,15 +238,15 @@ class Create:
         # 保存文件
         all_merge_files: list = [column_size, column_mean, column_var, column_sem, column_std,
                                  column_median, column_min, column_max, column_sum, column_prod]
+
         if output_file is not None:
             if add_merge_files is not None:
                 all_merge_files.extend(add_merge_files)
-                self.merge_files(all_merge_files, on=on, output_file=output_file)
+                return self.merge_files(all_merge_files, on=on, output_file=output_file)
             else:
-                self.merge_files(all_merge_files, on=on, output_file=output_file)
-        return all_merge_files
+                return self.merge_files(all_merge_files, on=on, output_file=output_file)
 
-    def merge_files(self, files: list, on: str, output_file: str = None) -> None:
+    def merge_files(self, files: list, on: str, output_file: str = None) -> DataFrame:
         """
         将文件进行合并
         :param files: 多个文件
@@ -266,6 +266,7 @@ class Create:
         # 保存文件
         if output_file is not None:
             self.to_file(new_file, output_file)
+        return new_file
 
 
 class Read:
