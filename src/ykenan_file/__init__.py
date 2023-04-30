@@ -158,8 +158,9 @@ class Create:
         # 总和
         self.log.debug(f"通过分组计算某列数总和: {group}, {column}")
         column_sum = df.groupby(group)[column].sum().reset_index()
-        group.append(f"{column}_sum")
-        column_sum.columns = group
+        new_column = group.copy()
+        new_column.append(f"{column}_sum")
+        column_sum.columns = new_column
         # 保存文件
         if output_file is not None:
             self.to_file(column_sum, output_file)
