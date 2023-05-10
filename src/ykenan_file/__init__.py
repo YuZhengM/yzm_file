@@ -4,6 +4,7 @@
 import os
 
 import pandas as pd
+import requests
 from ykenan_log import Logger
 from pandas import DataFrame
 
@@ -601,3 +602,13 @@ class StaticMethod:
         :return: dirs
         """
         return self.entry_contents_dict(path, 2)
+
+    def download_file(self, url: str, filename: str, chunk_size: int = 1024):
+        self.log.info(f"下载 {url} 文件")
+        response_data_file = requests.get(url, stream=True)
+        self.log.info(f"创建 {filename} 文件")
+        with open(filename, 'wb') as f:
+            for chunk in response_data_file.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    f.write(chunk)
+        self.log.info(f"下载 {url} ===> {filename} 文件完成")
