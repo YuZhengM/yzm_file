@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-import itertools
 import os
 
 import pandas as pd
@@ -25,7 +24,7 @@ class Create:
                  index: bool = False,
                  header: bool = True,
                  sheet_name='new_sheet',
-                 log_file: str = "ykenan_file",
+                 log_file: str = "YKenan_file",
                  is_form_log_file: bool = True):
         """
         Initialization creation information, public information
@@ -362,12 +361,12 @@ class Read:
         pd.DataFrame(pd_concat).to_csv(output_file, encoding=encoding, sep=self.sep, index=index)
 
 
-class staticMethod:
+class StaticMethod:
     """
     文件或者路径的静态方法
     """
 
-    def __init__(self, log_file: str = "ykenan_file", is_form_log_file: bool = True):
+    def __init__(self, log_file: str = "YKenan_file", is_form_log_file: bool = True):
         """
         :param log_file: Path to form a log file
         :param is_form_log_file: Is a log file formed
@@ -571,28 +570,20 @@ class staticMethod:
                 # 判断是否满足情况
                 if suffix is None or entry.name.endswith(suffix):
                     if type_ == 0:
-                        dict_ = dict(itertools.chain(dict_.items(), {
-                            entry.name: entry.path
-                        }.items()))
                         contents.append(entry.name)
+                        dict_.update({entry.name: entry.path})
                     elif type_ == 1:
                         # 此处判断不能和 type_ == 1 连写，因为需要进行提示 ValueError("type input error, type is 0 or 1 or 2.")
                         if entry.is_file():
-                            dict_ = dict(itertools.chain(dict_.items(), {
-                                entry.name: entry.path
-                            }.items()))
                             files.append(entry.name)
+                            dict_.update({entry.name: entry.path})
                     elif type_ == 2:
                         if entry.is_dir():
-                            dict_ = dict(itertools.chain(dict_.items(), {
-                                entry.name: entry.path
-                            }.items()))
                             dirs.append(entry.name)
+                            dict_.update({entry.name: entry.path})
                     else:
                         raise ValueError("type input error, type is 0 or 1 or 2.")
-        dict_ = dict(itertools.chain(dict_.items(), {
-            "name": contents if type_ == 0 else files if type_ == 1 else dirs
-        }.items()))
+        dict_.update({"name": contents if type_ == 0 else files if type_ == 1 else dirs})
         return dict_
 
     def entry_files_dict(self, path: str) -> dict:
