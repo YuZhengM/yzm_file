@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-
+import gzip
 import os
+import shutil
 
 import pandas as pd
 import requests
@@ -603,12 +604,76 @@ class StaticMethod:
         """
         return self.entry_contents_dict(path, 2)
 
-    def download_file(self, url: str, filename: str, chunk_size: int = 1024):
-        self.log.info(f"下载 {url} 文件")
-        response_data_file = requests.get(url, stream=True)
-        self.log.info(f"创建 {filename} 文件")
-        with open(filename, 'wb') as f:
-            for chunk in response_data_file.iter_content(chunk_size=chunk_size):
-                if chunk:
-                    f.write(chunk)
-        self.log.info(f"下载 {url} ===> {filename} 文件完成")
+    def unzip_gz(self, gz_file: str, generate_file: str = None, is_force: bool = False) -> list:
+        if generate_file:
+            if os.path.exists(generate_file) and not is_force:
+                self.log.warn(f"{generate_file} The file already exists, it has been moved by default")
+            else:
+                self.log.info(f"Start unzip file {gz_file}")
+                w = open(generate_file, 'wb')
+                f = gzip.open(gz_file, 'rb')
+                read = f.read()
+                # Form a file
+                w.write(read)
+                # Obtaining Content Information
+                file_content: list = read.decode().rstrip().split("\n")
+                f.close()
+                w.close()
+                self.log.info(f"End of unzip file  {gz_file}")
+                return file_content
+        f = gzip.open(gz_file, 'rb')
+        # Obtaining Content Information
+        file_content: list = f.read().decode().rstrip().split("\n")
+        f.close()
+        return file_content
+
+    def download_file(self, url: str, filename: str, chunk_size: int = 1024, is_force: bool = False):
+        """
+        download file
+        :param url: 下载的 url
+        :param filename: 下载后的文件名
+        :param chunk_size: 下载流的大小
+        :param is_force: 是否强制覆盖
+        :return:
+        """
+        if os.path.exists(filename) and not is_force:
+            self.log.warn(f"{filename} The file already exists, it has been downloaded by default")
+        else:
+            self.log.info(f"下载 {url} 文件")
+            response_data_file = requests.get(url, stream=True)
+            self.log.info(f"创建 {filename} 文件")
+            with open(filename, 'wb') as f:
+                for chunk in response_data_file.iter_content(chunk_size=chunk_size):
+                    if chunk:
+                        f.write(chunk)
+            self.log.info(f"下载 {url} ===> {filename} 文件完成")
+
+    def copy_file(self, source_file: str, target_file: str, is_force: bool = False) -> None:
+        """
+        复制文件
+        :param source_file: 源文件
+        :param target_file: 目标文件
+        :param is_force: 是否强制覆盖
+        :return:
+        """
+        if os.path.exists(target_file) and not is_force:
+            self.log.warn(f"{target_file} The file already exists, it has been copied by default")
+        else:
+            self.log.info(f"Start copying file {source_file}")
+            shutil.copy(source_file, target_file)
+            self.log.info(f"End of copying file  {source_file}")
+
+    def move_file(self, source_file: str, target_file: str, is_force: bool = False) -> None:
+        """
+        移动文件
+        :param source_file: 源文件
+        :param target_file: 目标文件
+        :param is_force: 是否强制覆盖
+        :return:
+        """
+        if os.path.exists(target_file) and not is_force:
+            self.log.warn(f"{target_file} The file already exists, it has been moved by default")
+        else:
+            self.log.info(f"Start moving file {source_file}")
+            shutil.move(source_file, target_file)
+            self.log.info(f"End of moving file  {source_file}")
