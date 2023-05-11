@@ -607,7 +607,7 @@ class StaticMethod:
 
     def unzip_gz(self, gz_file: str, generate_file: str = None, is_force: bool = False) -> list:
         if generate_file:
-            if os.path.exists(generate_file) and not is_force:
+            if os.path.exists(generate_file) and is_force:
                 self.log.warn(f"{generate_file} The file already exists, it has been moved by default")
             else:
                 self.log.info(f"Start unzip file {gz_file}")
@@ -637,7 +637,7 @@ class StaticMethod:
         :param is_force: 是否强制覆盖
         :return:
         """
-        if os.path.exists(filename) and not is_force:
+        if os.path.exists(filename) and is_force:
             self.log.warn(f"{filename} The file already exists, it has been downloaded by default")
         else:
             self.log.info(f"下载 {url} 文件")
@@ -657,7 +657,7 @@ class StaticMethod:
         :param is_force: 是否强制覆盖
         :return:
         """
-        if os.path.exists(target_file) and not is_force:
+        if os.path.exists(target_file) and is_force:
             self.log.warn(f"{target_file} The file already exists, it has been copied by default")
         else:
             self.log.info(f"Start copying file {source_file}")
@@ -672,7 +672,7 @@ class StaticMethod:
         :param is_force: 是否强制覆盖
         :return:
         """
-        if os.path.exists(target_file) and not is_force:
+        if os.path.exists(target_file) and is_force:
             self.log.warn(f"{target_file} The file already exists, it has been moved by default")
         else:
             self.log.info(f"Start moving file {source_file}")
