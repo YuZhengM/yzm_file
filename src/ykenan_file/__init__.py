@@ -3,6 +3,7 @@
 import gzip
 import os
 import shutil
+from multiprocessing.dummy import Lock
 
 import pandas as pd
 import requests
@@ -677,3 +678,13 @@ class StaticMethod:
             self.log.info(f"Start moving file {source_file}")
             shutil.move(source_file, target_file)
             self.log.info(f"End of moving file  {source_file}")
+
+    def makedirs(self, dirs: str, is_lock: bool = False):
+        lock = Lock()
+        if is_lock:
+            lock.locked()
+        if not os.path.exists(dirs):
+            self.log.info(f"创建 {dirs} 文件夹")
+            os.makedirs(dirs)
+        if is_lock:
+            lock.release()
