@@ -657,8 +657,8 @@ class StaticMethod:
         :param is_force: 是否强制覆盖
         :return:
         """
-        if os.path.exists(target_file) and is_force:
-            self.log.warn(f"{target_file} The file already exists, it has been copied by default")
+        if is_force:
+            self.log.warn(f"{source_file} ====> {target_file} The file already exists, it has been copied by default")
         else:
             self.log.info(f"Start copying file {source_file}")
             shutil.copy(source_file, target_file)
@@ -672,8 +672,8 @@ class StaticMethod:
         :param is_force: 是否强制覆盖
         :return:
         """
-        if os.path.exists(target_file) and is_force:
-            self.log.warn(f"{target_file} The file already exists, it has been moved by default")
+        if is_force:
+            self.log.warn(f"{source_file} ====> {target_file} The file already exists, it has been moved by default")
         else:
             self.log.info(f"Start moving file {source_file}")
             shutil.move(source_file, target_file)
