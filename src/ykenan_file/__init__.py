@@ -55,7 +55,7 @@ class Create:
         """
         self.log.debug(f"create a file: {file}")
         # 导出文件
-        if str(file).endswith(".txt") or str(file).endswith(".bed"):
+        if str(file).endswith(".txt") or str(file).endswith(".bed") or str(file).endswith(".tsv"):
             df.to_csv(file, sep=self.sep, lineterminator=self.line_terminator, header=self.header, encoding=self.encoding, index=self.index)
         elif str(file).endswith(".csv"):
             df.to_csv(file, sep=',', lineterminator=self.line_terminator, header=self.header, encoding=self.encoding, index=self.index)
@@ -326,7 +326,7 @@ class Read:
         :return:
         """
         self.log.debug(f"Start reading {file} file...")
-        if str(file).endswith(".txt") or str(file).endswith(".bed"):
+        if str(file).endswith(".txt") or str(file).endswith(".bed") or str(file).endswith(".tsv"):
             return pd.read_table(file, sep=self.sep, header=self.header, encoding=self.encoding, low_memory=self.low_memory)
         elif str(file).endswith(".csv"):
             return pd.read_csv(file, sep=',', header=self.header, encoding=self.encoding, low_memory=self.low_memory)
