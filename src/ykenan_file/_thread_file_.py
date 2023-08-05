@@ -86,7 +86,7 @@ class ThreadFile:
     def get_result(self, future: Future):
         i: int = 0
         while True:
-            if future.done():
+            if future.done() and future.result() is not None:
                 self.results.append(future.result())
                 break
             else:
