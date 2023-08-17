@@ -84,16 +84,7 @@ class ThreadFile:
         return self.read.get_content(file)
 
     def get_result(self, future: Future):
-        i: int = 0
-        while True:
-            if future.done() and future.result() is not None:
-                self.results.append(future.result())
-                break
-            else:
-                i += 1
-                sleep(1)
-                if i > self.wait_number:
-                    break
+        self.results.append(future.result())
 
     def run(self):
         for task in as_completed(self.tasks):
