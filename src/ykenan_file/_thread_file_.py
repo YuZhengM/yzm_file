@@ -3,7 +3,7 @@
 
 from asyncio import Future, sleep
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import Optional
+from typing import Optional, Sequence, Literal, List, Any
 
 from pandas import DataFrame
 from ykenan_log import Logger
@@ -27,13 +27,14 @@ class ThreadFile:
         thread: int = 16,
         wait_number: int = 5,
         log_file: str = "YKenan_file",
-        is_form_log_file: bool = True,
+        is_verbose: bool = False,
+        is_form_log_file: bool = False,
         sep='\t',
         line_terminator="\n",
         encoding: str = "utf-8",
         orient: str = "records",
         lines: bool = True,
-        header="infer",
+        header: int | Sequence[int] | None | Literal["infer"] = "infer",
         sheet_name=0,
         low_memory: bool = False
     ):
@@ -52,6 +53,7 @@ class ThreadFile:
         :param sheet_name: Specify the sheet number when reading Excel
         :param low_memory: Process files in internal chunks to reduce memory usage during parsing
         :param log_file: Path to form a log file
+        :param is_verbose: Is log information displayed
         :param is_form_log_file: Is a log file formed
         """
         self.base_path = base_path
@@ -69,6 +71,7 @@ class ThreadFile:
             sheet_name=sheet_name,
             low_memory=low_memory,
             log_file=log_file,
+            is_verbose=is_verbose,
             is_form_log_file=is_form_log_file
         )
         self.log = Logger(name="YKenan_file", log_path=log_file, is_form_file=is_form_log_file)
@@ -83,14 +86,14 @@ class ThreadFile:
     def read_file(self, file: path) -> DataFrame:
         return self.read.get_content(file)
 
-    def get_result(self, future: Future):
+    def get_result(self, future: Future) -> None:
         self.results.append(future.result())
 
-    def run(self):
+    def run(self) -> None:
         for task in as_completed(self.tasks):
             task.add_done_callback(self.get_result)
 
-    def get_files(self):
+    def get_files(self) -> list[str] | list[Any]:
         file_size: int = 0
         if self.files is not None:
             file_size: int = len(list(self.files))
@@ -104,7 +107,7 @@ class ThreadFile:
             new_files = self.static_method.get_files_path(self.base_path)
         return new_files
 
-    def add_tasks(self):
+    def add_tasks(self) -> list[Any]:
         with ProcessPoolExecutor(self.thread) as executor:
             future_list = [executor.submit(self.read_file, file) for file in self.new_files]
         return future_list

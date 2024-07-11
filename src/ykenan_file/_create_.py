@@ -82,12 +82,12 @@ class Create:
         """
         Delete File Column Name
         :param df: source document
-        :param columns: 删除的列名
+        :param columns: Delete column names
         :param output_file: Output file path
         :return:
         """
         # 删除列
-        self.log.debug(f"删除文件列名: {columns}")
+        self.log.debug(f"Delete file column names: {columns}")
         df.drop(columns, axis=1, inplace=True)
         # 保存文件
         if output_file is not None:
@@ -95,19 +95,19 @@ class Create:
 
     def add_content(self, df: DataFrame, list_content: list, columns=None, is_log: bool = False, output_file: str = None) -> None:
         """
-        向创建的文件添加内容
+        Add content to the created file
         :param df: DataFrame
-        :param list_content: 一列的内容信息, 数组形式
-        :param columns: 列信息
+        :param list_content: A column of content information in array form
+        :param columns: column information
         :param output_file: Output file path
-        :param is_log: 是否打印 log
+        :param is_log: Do you want to print the log
         :return:
         """
         # 添加内容
         if columns is None:
             columns: list = list(df.columns)
         if is_log:
-            self.log.debug(f"添加内容 {list_content} ...")
+            self.log.debug(f"Add content {list_content} ...")
         df.loc[len(df)] = pd.Series(list_content, index=columns)
         # 保存文件
         if output_file is not None:
@@ -115,15 +115,15 @@ class Create:
 
     def add_difference_column(self, df: DataFrame, column: str, a: str, b: str, output_file: str = None) -> None:
         """
-        添加一个减法列 (column = a - b)
+        Add a subtraction column (column=a - b)
         :param df: DataFrame
-        :param column: 添加的一个新列名
-        :param a: 被减数
-        :param b: 减数
+        :param column: A new column name added
+        :param a: minuend
+        :param b: subtrahend
         :param output_file: Output file path
         :return:
         """
-        self.log.debug(f"添加一个减法列: {column}")
+        self.log.debug(f"Add a subtraction column: {column}")
         df[column] = df[a] - df[b]
         # 保存文件
         if output_file is not None:
@@ -148,7 +148,7 @@ class Create:
 
     def sum_group_by(self, df: DataFrame, group: list, column: str, output_file: str = None) -> DataFrame:
         """
-        通过分组计算某列数总和
+        Calculate the total number of columns by grouping
         :param df: DataFrame
         :param group: 分组的列
         :param column: 需要和的列
@@ -156,7 +156,7 @@ class Create:
         :return:
         """
         # 总和
-        self.log.debug(f"通过分组计算某列数总和: {group}, {column}")
+        self.log.debug(f"Calculate the total number of columns by grouping: {group}, {column}")
         column_sum = df.groupby(group)[column].sum().reset_index()
         new_column = group.copy()
         new_column.append(f"{column}_sum")
@@ -168,7 +168,7 @@ class Create:
 
     def count_group_by(self, df: DataFrame, group: list, column: str, output_file: str = None) -> DataFrame:
         """
-        通过分组计算某列数数量
+        Calculate the number of columns by grouping
         :param df: DataFrame
         :param group: 分组的列
         :param column: 需要数量的列
@@ -176,7 +176,7 @@ class Create:
         :return:
         """
         # 总和
-        self.log.debug(f"通过分组计算某列数总和: {group}, {column}")
+        self.log.debug(f"Calculate the total number of columns by grouping: {group}, {column}")
         column_sum = df.groupby(group)[column].count().reset_index()
         group.append(f"{column}_count")
         column_sum.columns = group
@@ -187,7 +187,7 @@ class Create:
 
     def calculation_group_by(self, df: DataFrame, group: list, column: str, on: str, output_file: str = None, add_merge_files: list = None) -> DataFrame:
         """
-        通过分组进行一系列数值计算
+        Performing a series of numerical calculations through grouping
         :param df: DataFrame
         :param group: 分组的列
         :param column: 需要秩的列
@@ -197,7 +197,7 @@ class Create:
         :return:
         """
         # 总和
-        self.log.debug(f"通过分组进行一系列数值计算: {group}, {column}")
+        self.log.debug(f"Performing a series of numerical calculations through grouping: {group}, {column}")
         # 个数大小
         column_size = df.groupby(group)[column].size().reset_index()
         new_column = group.copy()
@@ -266,11 +266,11 @@ class Create:
         """
         # 总和
         size = len(files)
-        self.log.debug(f"将文件进行合并: {size}, {on}")
+        self.log.debug(f"Merge files: {size}, {on}")
         new_file = files[0]
         i = 1
         while i < size:
-            self.log.debug(f"将文件进行合并第 {i} 次")
+            self.log.debug(f"Merge files {i} 次")
             new_file = pd.merge(new_file, files[i], on=on)
             i += 1
         # 保存文件

@@ -20,15 +20,22 @@ class StaticMethod:
     文件或者路径的静态方法
     """
 
-    def __init__(self, log_file: str = "YKenan_file", is_form_log_file: bool = True):
+    def __init__(
+        self,
+        log_file: str = "YKenan_file",
+        is_verbose: bool = False,
+        is_form_log_file: bool = False
+    ):
         """
         file static method
         :param log_file: Path to form a log file
+        :param is_verbose: Is log information displayed
         :param is_form_log_file: Is a log file formed
         """
         self.log = Logger(name="YKenan_file", log_path=log_file, is_form_file=is_form_log_file)
+        self.is_verbose = is_verbose
 
-    def read_file_line(self, path: str, mode: str = 'r', encoding: str = "utf-8") -> list:
+    def read_file_line(self, path: str, mode: str = 'r', encoding: str = "utf-8") -> list[str]:
         """
         Read file by line
         :param path:
@@ -37,7 +44,10 @@ class StaticMethod:
         :return:
         """
         content = []
-        self.log.info(f"Start reading file {path}")
+
+        if self.is_verbose:
+            self.log.info(f"Start reading file {path}")
+
         with open(path, mode, encoding=encoding) as f:
             while True:
                 line = f.readline().strip()
@@ -56,13 +66,24 @@ class StaticMethod:
         :param encoding:
         :return:
         """
-        self.log.info(f"Start writing file {path}")
+        if self.is_verbose:
+            self.log.info(f"Start writing file {path}")
+
         with open(path, mode, encoding=encoding) as f:
             for li in content:
                 f.write(li + line)
 
-    def read_write_line(self, path: str, output: str, callback, column=None, rm: str = 'r', om: str = 'w',
-                        encoding: str = "utf-8", buffering: int = 1, newline: str = "\n") -> None:
+    def read_write_line(
+        self,
+        path: str,
+        output: str, callback,
+        column=None,
+        rm: str = 'r',
+        om: str = 'w',
+        encoding: str = "utf-8",
+        buffering: int = 256,
+        newline: str = "\n"
+    ) -> None:
         """
         Write one file to another
         :param column: Output column name
@@ -80,7 +101,10 @@ class StaticMethod:
             with open(path, rm, encoding=encoding) as f:
                 if column:
                     name: str = "\t".join(column)
-                    self.log.debug(f"Add Column Name: {name}")
+
+                    if self.is_verbose:
+                        self.log.debug(f"Add Column Name: {name}")
+
                     w.write(f"{name}\n")
                 while True:
                     line: str = f.readline().strip()
@@ -91,23 +115,26 @@ class StaticMethod:
                         content = "\t".join(new_line)
                         w.write(f"{content}\n")
 
-    def get_contents(self, path: str) -> list:
+    def get_contents(self, path: str) -> list[str]:
         """
         Obtain all files and folders under the specified path
         :param path: path
         :return: files and folders
         """
-        self.log.info("Starting to retrieve content under this path")
+        if self.is_verbose:
+            self.log.info(f"Starting to retrieve content under this path: {path}")
         return list(os.listdir(path))
 
-    def entry_contents(self, path: str, type_: int = 0) -> list:
+    def entry_contents(self, path: str, type_: int = 0) -> list[str]:
         """
         Obtain all files and (or) folders under the specified path
         :param path: path
         :param type_: judge file or dir
         :return: files and (or) folders
         """
-        self.log.info("Starting to retrieve content under this path")
+        if self.is_verbose:
+            self.log.info(f"Starting to retrieve content under this path: {path}")
+
         contents: list = []
         with os.scandir(path) as it:
             for entry in it:
@@ -122,14 +149,16 @@ class StaticMethod:
                     raise ValueError("type input error, type is 0 or 1 or 2.")
         return contents
 
-    def entry_contents_path(self, path: str, type_: int = 0) -> list:
+    def entry_contents_path(self, path: str, type_: int = 0) -> list[str]:
         """
         Obtain all files and (or) folders under the specified path
         :param path: path
         :param type_: judge file or dir
         :return: files and (or) folders path
         """
-        self.log.info("Starting to retrieve content under this path")
+        if self.is_verbose:
+            self.log.info(f"Starting to retrieve content under this path: {path}")
+
         contents: list = []
         with os.scandir(path) as it:
             for entry in it:
@@ -146,13 +175,15 @@ class StaticMethod:
                     raise ValueError("type input error, type is 0 or 1 or 2.")
         return contents
 
-    def get_files(self, path: str) -> list:
+    def get_files(self, path: str) -> list[str]:
         """
         Obtain all files in the specified path
         :param path:  path
         :return: files
         """
-        self.log.info("Starting to retrieve files under this path")
+        if self.is_verbose:
+            self.log.info(f"Starting to retrieve content under this path: {path}")
+
         files: list = []
         with os.scandir(path) as it:
             for entry in it:
@@ -161,13 +192,15 @@ class StaticMethod:
                     files.append(entry.name)
         return files
 
-    def get_files_path(self, path: str) -> list:
+    def get_files_path(self, path: str) -> list[str]:
         """
         Obtain all files in the specified path
         :param path:  path
         :return: files
         """
-        self.log.info("Starting to retrieve files under this path")
+        if self.is_verbose:
+            self.log.info(f"Starting to retrieve content under this path: {path}")
+
         files: list = []
         with os.scandir(path) as it:
             for entry in it:
@@ -176,13 +209,15 @@ class StaticMethod:
                     files.append(entry.path)
         return files
 
-    def get_dirs(self, path: str) -> list:
+    def get_dirs(self, path: str) -> list[str]:
         """
         Obtain all files in the specified path
         :param path:  path
         :return: dirs
         """
-        self.log.info("Starting to retrieve directories under this path")
+        if self.is_verbose:
+            self.log.info(f"Starting to retrieve content under this path: {path}")
+
         dirs: list = []
         with os.scandir(path) as it:
             for entry in it:
@@ -191,13 +226,15 @@ class StaticMethod:
                     dirs.append(entry.name)
         return dirs
 
-    def get_dirs_path(self, path: str) -> list:
+    def get_dirs_path(self, path: str) -> list[str]:
         """
         Obtain all files in the specified path
-        :param path:  path
+        :param path: path
         :return: dirs
         """
-        self.log.info("Starting to retrieve directories under this path")
+        if self.is_verbose:
+            self.log.info(f"Starting to retrieve content under this path: {path}")
+
         dirs: list = []
         with os.scandir(path) as it:
             for entry in it:
@@ -211,10 +248,12 @@ class StaticMethod:
         Obtain all files in the specified path
         :param path: path
         :param type_: type_
-        :param suffix: 筛选的条件
+        :param suffix: Filter criteria
         :return: files and (or) dirs
         """
-        self.log.info("Starting to retrieve content under this path")
+        if self.is_verbose:
+            self.log.info(f"Starting to retrieve content under this path: {path}")
+
         files: list = []
         dirs: list = []
         contents: list = []
@@ -262,7 +301,9 @@ class StaticMethod:
             if os.path.exists(generate_file) and is_force:
                 self.log.warn(f"{generate_file} The file already exists, it has been moved by default")
             else:
-                self.log.info(f"Start unzip file {gz_file}")
+                if self.is_verbose:
+                    self.log.info(f"Start unzip file {gz_file}")
+
                 w = open(generate_file, 'wb')
                 f = gzip.open(gz_file, 'rb')
                 read = f.read()
@@ -272,7 +313,10 @@ class StaticMethod:
                 file_content: list = read.decode().rstrip().split("\n")
                 f.close()
                 w.close()
-                self.log.info(f"End of unzip file  {gz_file}")
+
+                if self.is_verbose:
+                    self.log.info(f"End of unzip file  {gz_file}")
+
                 return file_content
         f = gzip.open(gz_file, 'rb')
         # Obtaining Content Information
@@ -280,63 +324,82 @@ class StaticMethod:
         f.close()
         return file_content
 
-    def download_file(self, url: str, filename: str, chunk_size: int = 1024, is_force: bool = False):
+    def download_file(self, url: str, filename: str, chunk_size: int = 1024, is_force: bool = False) -> None:
         """
         download file
-        :param url: 下载的 url
-        :param filename: 下载后的文件名
-        :param chunk_size: 下载流的大小
-        :param is_force: 是否强制覆盖
+        :param url: Download URL
+        :param filename: The downloaded file name
+        :param chunk_size: The size of the download stream
+        :param is_force: Whether to force coverage
         :return:
         """
         if os.path.exists(filename) and is_force:
             self.log.warn(f"{filename} The file already exists, it has been downloaded by default")
         else:
-            self.log.info(f"下载 {url} 文件")
+            if self.is_verbose:
+                self.log.info(f"Download {url} file")
+
             response_data_file = requests.get(url, stream=True)
-            self.log.info(f"创建 {filename} 文件")
+
+            if self.is_verbose:
+                self.log.info(f"Create {filename} file")
+
             with open(filename, 'wb') as f:
                 for chunk in response_data_file.iter_content(chunk_size=chunk_size):
                     if chunk:
                         f.write(chunk)
-            self.log.info(f"下载 {url} ===> {filename} 文件完成")
+
+            if self.is_verbose:
+                self.log.info(f"Download {url}===>{filename} file completed")
 
     def copy_file(self, source_file: str, target_file: str, is_force: bool = False) -> None:
         """
-        复制文件
-        :param source_file: 源文件
-        :param target_file: 目标文件
-        :param is_force: 是否强制覆盖
+        copy file
+        :param source_file: source file
+        :param target_file: target file
+        :param is_force: Whether to force coverage
         :return:
         """
         if is_force:
             self.log.warn(f"{source_file} ====> {target_file} The file already exists, it has been copied by default")
         else:
-            self.log.info(f"Start copying file {source_file}")
+            if self.is_verbose:
+                self.log.info(f"Start copying file {source_file}")
             shutil.copy(source_file, target_file)
-            self.log.info(f"End of copying file  {source_file}")
+            if self.is_verbose:
+                self.log.info(f"End of copying file  {source_file}")
 
     def move_file(self, source_file: str, target_file: str, is_force: bool = False) -> None:
         """
-        移动文件
-        :param source_file: 源文件
-        :param target_file: 目标文件
-        :param is_force: 是否强制覆盖
+        move file
+        :param source_file: source file
+        :param target_file: target file
+        :param is_force: Whether to force coverage
         :return:
         """
         if is_force:
             self.log.warn(f"{source_file} ====> {target_file} The file already exists, it has been moved by default")
         else:
-            self.log.info(f"Start moving file {source_file}")
-            shutil.move(source_file, target_file)
-            self.log.info(f"End of moving file  {source_file}")
+            if self.is_verbose:
+                self.log.info(f"Start moving file {source_file}")
 
-    def makedirs(self, dirs: str, is_lock: bool = False):
+            shutil.move(source_file, target_file)
+
+            if self.is_verbose:
+                self.log.info(f"End of moving file  {source_file}")
+
+    def makedirs(self, dirs: str, is_lock: bool = False) -> None:
         lock = Lock()
+
         if is_lock:
             lock.locked()
+
         if not os.path.exists(dirs):
-            self.log.info(f"创建 {dirs} 文件夹")
+
+            if self.is_verbose:
+                self.log.info(f"Create {dirs} folder")
+
             os.makedirs(dirs)
+
         if is_lock:
             lock.release()
