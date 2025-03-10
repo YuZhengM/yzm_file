@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-from asyncio import Future, sleep
+from asyncio import Future
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import Optional, Sequence, Literal, List, Any
+from typing import Optional, Sequence, Literal, Any
 
 from pandas import DataFrame
 from ykenan_log import Logger
@@ -13,7 +13,7 @@ from ._static_method_ import StaticMethod
 from ._read_ import Read
 
 '''
- * @Author       : YKenan
+ * @Author       : Zhengmin Yu
  * @Description  : file ThreadFile
 '''
 
@@ -74,7 +74,7 @@ class ThreadFile:
             is_verbose=is_verbose,
             is_form_log_file=is_form_log_file
         )
-        self.log = Logger(name="YKenan_file", log_path=log_file, is_form_file=is_form_log_file)
+        self.log = Logger(name="file", log_path=log_file, is_form_file=is_form_log_file)
         self.results: list = []
         # get exec files
         self.new_files = self.get_files()

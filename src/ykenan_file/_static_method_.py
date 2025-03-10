@@ -10,7 +10,7 @@ import shutil
 from multiprocessing.dummy import Lock
 
 '''
- * @Author       : YKenan
+ * @Author       : Zhengmin Yu
  * @Description  : file StaticMethod
 '''
 
@@ -22,7 +22,7 @@ class StaticMethod:
 
     def __init__(
         self,
-        log_file: str = "YKenan_file",
+        log_file: str = "file",
         is_verbose: bool = False,
         is_form_log_file: bool = False
     ):
@@ -32,7 +32,7 @@ class StaticMethod:
         :param is_verbose: Is log information displayed
         :param is_form_log_file: Is a log file formed
         """
-        self.log = Logger(name="YKenan_file", log_path=log_file, is_form_file=is_form_log_file)
+        self.log = Logger(name="file", log_path=log_file, is_form_file=is_form_log_file)
         self.is_verbose = is_verbose
 
     def read_file_line(self, path: str, mode: str = 'r', encoding: str = "utf-8") -> list[str]:
