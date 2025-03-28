@@ -299,7 +299,7 @@ class StaticMethod:
     def unzip_gz(self, gz_file: str, generate_file: str = None, is_force: bool = False) -> list:
         if generate_file:
             if os.path.exists(generate_file) and is_force:
-                self.log.warn(f"{generate_file} The file already exists, it has been moved by default")
+                self.log.warning(f"{generate_file} The file already exists, it has been moved by default")
             else:
                 if self.is_verbose:
                     self.log.info(f"Start unzip file {gz_file}")
@@ -334,7 +334,7 @@ class StaticMethod:
         :return:
         """
         if os.path.exists(filename) and is_force:
-            self.log.warn(f"{filename} The file already exists, it has been downloaded by default")
+            self.log.warning(f"{filename} The file already exists, it has been downloaded by default")
         else:
             if self.is_verbose:
                 self.log.info(f"Download {url} file")
@@ -361,7 +361,7 @@ class StaticMethod:
         :return:
         """
         if is_force:
-            self.log.warn(f"{source_file} ====> {target_file} The file already exists, it has been copied by default")
+            self.log.warning(f"{source_file} ====> {target_file} The file already exists, it has been copied by default")
         else:
             if self.is_verbose:
                 self.log.info(f"Start copying file {source_file}")
@@ -378,7 +378,7 @@ class StaticMethod:
         :return:
         """
         if is_force:
-            self.log.warn(f"{source_file} ====> {target_file} The file already exists, it has been moved by default")
+            self.log.warning(f"{source_file} ====> {target_file} The file already exists, it has been moved by default")
         else:
             if self.is_verbose:
                 self.log.info(f"Start moving file {source_file}")
