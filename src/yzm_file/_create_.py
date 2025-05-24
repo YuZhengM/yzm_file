@@ -2,11 +2,11 @@
 # -*- coding: UTF-8 -*-
 
 import pandas as pd
-from ykenan_log import Logger
+from yzm_log import Logger
 from pandas import DataFrame
 
 '''
- * @Author       : YKenan
+ * @Author       : Zheng-Min Yu
  * @Description  : file Create
 '''
 
@@ -24,7 +24,7 @@ class Create:
         index: bool = False,
         header: bool = True,
         sheet_name='new_sheet',
-        log_file: str = "YKenan_file",
+        log_file: str = "file",
         is_form_log_file: bool = True
     ):
         """
@@ -38,7 +38,7 @@ class Create:
         :param log_file: Path to form a log file
         :param is_form_log_file: Is a log file formed
         """
-        self.log = Logger(name="YKenan_file", log_path=log_file, is_form_file=is_form_log_file)
+        self.log = Logger(name="file", log_path=log_file, is_form_file=is_form_log_file)
         self.sep = sep
         self.line_terminator = line_terminator
         self.encoding = encoding
@@ -255,6 +255,8 @@ class Create:
                 return self.merge_files(all_merge_files, on=on, output_file=output_file)
             else:
                 return self.merge_files(all_merge_files, on=on, output_file=output_file)
+        else:
+            return self.merge_files(all_merge_files, on=on)
 
     def merge_files(self, files: list, on: str, output_file: str = None) -> DataFrame:
         """

@@ -6,14 +6,14 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import Optional, Sequence, Literal, Any
 
 from pandas import DataFrame
-from ykenan_log import Logger
+from yzm_log import Logger
 
 from ._util_ import path, collection
 from ._static_method_ import StaticMethod
 from ._read_ import Read
 
 '''
- * @Author       : Zhengmin Yu
+ * @Author       : Zheng-Min Yu
  * @Description  : file ThreadFile
 '''
 
@@ -26,7 +26,7 @@ class ThreadFile:
         files: Optional[collection] = None,
         thread: int = 16,
         wait_number: int = 5,
-        log_file: str = "YKenan_file",
+        log_file: str = "file",
         is_verbose: bool = False,
         is_form_log_file: bool = False,
         sep='\t',

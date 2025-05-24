@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import requests
-from ykenan_log import Logger
+from yzm_log import Logger
 
 import gzip
 import os
@@ -10,7 +10,7 @@ import shutil
 from multiprocessing.dummy import Lock
 
 '''
- * @Author       : Zhengmin Yu
+ * @Author       : Zheng-Min Yu
  * @Description  : file StaticMethod
 '''
 
@@ -107,7 +107,7 @@ class StaticMethod:
 
                     w.write(f"{name}\n")
                 while True:
-                    line: str = f.readline().strip()
+                    line: str = str(f.readline().strip())
                     if not line:
                         break
                     new_line: list = callback(line)
@@ -178,7 +178,7 @@ class StaticMethod:
     def get_files(self, path: str) -> list[str]:
         """
         Obtain all files in the specified path
-        :param path:  path
+        :param path: path
         :return: files
         """
         if self.is_verbose:
@@ -195,8 +195,8 @@ class StaticMethod:
     def get_files_path(self, path: str) -> list[str]:
         """
         Obtain all files in the specified path
-        :param path:  path
-        :return: files
+        :param path: path
+        :return: file paths
         """
         if self.is_verbose:
             self.log.info(f"Starting to retrieve content under this path: {path}")

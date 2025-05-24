@@ -5,10 +5,10 @@ from typing import Sequence, Literal
 
 import pandas as pd
 from pandas import DataFrame
-from ykenan_log import Logger
+from yzm_log import Logger
 
 '''
- * @Author       : YKenan
+ * @Author       : Zheng-Min Yu
  * @Description  : file Read
 '''
 
@@ -28,7 +28,7 @@ class Read:
         header: int | Sequence[int] | None | Literal["infer"] = "infer",
         sheet_name=0,
         low_memory: bool = False,
-        log_file: str = "YKenan_file",
+        log_file: str = "file",
         is_verbose: bool = False,
         is_form_log_file: bool = False
     ):
@@ -46,7 +46,7 @@ class Read:
         :param is_verbose: Is log information displayed
         :param is_form_log_file: Is a log file formed
         """
-        self.log = Logger(name="YKenan_file", log_path=log_file, is_form_file=is_form_log_file)
+        self.log = Logger(name="file", log_path=log_file, is_form_file=is_form_log_file)
         self.sep = sep
         self.line_terminator = line_terminator
         self.encoding = encoding
@@ -76,6 +76,8 @@ class Read:
             return pd.read_html(file, encoding=self.encoding)
         elif str(file).endswith(".json"):
             return pd.read_json(file, orient=self.orient, lines=self.lines, encoding=self.encoding)
+        else:
+            raise ValueError("Unsupported file type")
 
     def read_file(self, *files) -> list[DataFrame]:
         """
