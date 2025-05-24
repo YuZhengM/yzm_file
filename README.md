@@ -17,6 +17,6 @@ pip install yzm_file
 > import
 
 ```shell
-import yzm_file
+import yzm_file as yf
 ```
 
